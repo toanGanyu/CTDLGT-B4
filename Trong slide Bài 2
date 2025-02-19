@@ -1,0 +1,80 @@
+using System;
+using System.Collections.Generic;
+
+class SinhVien
+{
+    public int Id { get; set; }
+    public string HoTen { get; set; }
+    public double DiemTB { get; set; }
+
+    public SinhVien(int id, string hoTen, double diemTB)
+    {
+        Id = id;
+        HoTen = hoTen;
+        DiemTB = diemTB;
+    }
+}
+
+class Program
+{
+    static SinhVien TimKiemTuyenTinh(List<SinhVien> ds, int id)
+    {
+        foreach (var sv in ds)
+        {
+            if (sv.Id == id)
+                return sv;
+        }
+        return null;
+    }
+
+    static SinhVien TimKiemNhiPhan(List<SinhVien> ds, int id)
+    {
+        int left = 0, right = ds.Count - 1;
+        while (left <= right)
+        {
+            int mid = (left + right) / 2;
+            if (ds[mid].Id == id)
+                return ds[mid];
+            else if (ds[mid].Id < id)
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+        return null;
+    }
+
+    static SinhVien TimKiemSentinel(List<SinhVien> ds, int id)
+    {
+        ds.Add(new SinhVien(id, "", 0)); 
+        int i = 0;
+        while (ds[i].Id != id)
+            i++;
+        ds.RemoveAt(ds.Count - 1);
+        if (i < ds.Count)
+            return ds[i];
+        return null;
+    }
+
+    static void Main()
+    {
+        List<SinhVien> danhSach = new List<SinhVien>
+        {
+            new SinhVien(101, "Nguyen Van A", 8.5),
+            new SinhVien(102, "Tran Thi B", 7.2),
+            new SinhVien(103, "Le Van C", 9.1),
+            new SinhVien(104, "Pham Hong D", 6.8),
+        };
+
+        danhSach.Sort((a, b) => a.Id.CompareTo(b.Id));
+
+        int idTimKiem = 103;
+        var sv1 = TimKiemTuyenTinh(danhSach, idTimKiem);
+        Console.WriteLine(sv1 != null ? $"Tim thay: {sv1.HoTen}" : "Khong tim thay");
+
+        var sv2 = TimKiemNhiPhan(danhSach, idTimKiem);
+        Console.WriteLine(sv2 != null ? $"Tim thay: {sv2.HoTen}" : "Khong tim thay");
+
+        var sv3 = TimKiemSentinel(danhSach, idTimKiem);
+        Console.WriteLine(sv3 != null ? $"Tim thay: {sv3.HoTen}" : "Khong tim thay");
+    }
+}
