@@ -1,0 +1,110 @@
+using System;
+using System.Diagnostics;
+
+public class Timing
+{
+    TimeSpan startingTime;
+    TimeSpan duration;
+    
+    public Timing()
+    {
+        startingTime = new TimeSpan(0);
+        duration = new TimeSpan(0);
+    }
+
+    public void StopTime()
+    {
+        duration = Process.GetCurrentProcess().Threads[0].UserProcessorTime.Subtract(startingTime);
+    }
+
+    public void StartTime()
+    {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        startingTime = Process.GetCurrentProcess().Threads[0].UserProcessorTime;
+    }
+
+    public TimeSpan Result()
+    {
+        return duration;
+    }
+}
+
+public class Program
+{
+    static int SeqSearch(int[] arr, int value)
+    {
+        int i = 0;
+        while (arr[i] != value)
+            i++;
+        return i;
+    }
+
+    static int RecuSearch(int[] arr, int from, int value)
+    {
+        if (arr == null)
+            return -1;
+        if (arr[from] == value)
+            return from;
+        else
+            return RecuSearch(arr, from + 1, value);
+    }
+
+    static int SenSearch(int[] arr, int value)
+    {
+        int x = arr[arr.Length - 1];
+        arr[arr.Length - 1] = value;
+        int i = SeqSearch(arr, value);
+        arr[arr.Length - 1] = x;
+        if (i < arr.Length - 1)
+            return i;
+        else if (x == value)
+            return arr.Length - 1;
+        else
+            return -1;
+    }
+
+    static int BinSearch(int[] sarr, int value)
+    {
+        int L = 0, R = sarr.Length - 1;
+        while (L <= R)
+        {
+            int m = (L + R) / 2;
+            if (sarr[m] == value)
+                return m;
+            else if (sarr[m] < value)
+                L = m + 1;
+            else
+                R = m - 1;
+        }
+        return -1;
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.Clear();
+        Timing timing = new Timing();
+
+        int[] sarr = { 2, 3, 5, 6, 9 };
+        int value = 6;
+
+        timing.StartTime();
+        int indexBin = BinSearch(sarr, value);
+        timing.StopTime();
+        Console.WriteLine($"Tim kiem nhi phan: Phan tu co gia tri {value} o vi tri {indexBin}");
+        Console.WriteLine($"Thoi gian thuc thi: {timing.Result().TotalMilliseconds} ms\n");
+
+        int[] arr = { 3, 9, 2, 5, 6 };
+        timing.StartTime();
+        int indexSen = SenSearch(arr, value);
+        timing.StopTime();
+        Console.WriteLine($"Tim kiem Sentinel: Phan tu co gia tri {value} o vi tri {indexSen}");
+        Console.WriteLine($"Thoi gian thuc thi: {timing.Result().TotalMilliseconds} ms\n");
+
+        timing.StartTime();
+        int indexSeq = SeqSearch(arr, value);
+        timing.StopTime();
+        Console.WriteLine($"Tim kiem tuyen tinh: Phan tu co gia tri {value} o vi tri {indexSeq}");
+        Console.WriteLine($"Thoi gian thuc thi: {timing.Result().TotalMilliseconds} ms");
+    }
+}
