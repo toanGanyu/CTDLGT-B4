@@ -1,0 +1,51 @@
+namespace CTDLGT_B4
+{
+    internal class Program
+    {
+        static void Main()
+        {
+            int[] arr = { 3, 1, 4, 5, 9, 2 };
+            int value = int.Parse(Console.ReadLine());
+
+            int result = SenSearchDeQuy(arr, value);
+            if (result != -1)
+                Console.WriteLine($"SeqSearch Tim thay {value} tại vi tri {result}");
+            else
+                Console.WriteLine($"{value} khong ton tai trong mang");
+            int Binresult = BinSearch(arr, value);
+            if (Binresult != -1)
+                Console.WriteLine($"BinSearch Tim thay {value} tại vi tri {Binresult}");
+            else
+                Console.WriteLine($"{value} khong ton tai trong mang");
+
+        }
+        static int SenSearchDeQuy (int[] arr, int value, int index = 0)
+        {
+            if (index == arr.Length)
+                return -1;
+            if (arr[index] == value)
+                return index;
+            return SenSearchDeQuy(arr, value, index + 1);
+        }
+        static int BinSearchDeQuy(int[] sarr, int value, int L, int R)
+        {
+            if (L > R)
+                return -1; 
+
+            int m = (L + R) / 2;
+
+            if (sarr[m] == value)
+                return m;
+            else if (sarr[m] < value)
+                return BinSearchDeQuy(sarr, value, m + 1, R);
+            else
+                return BinSearchDeQuy(sarr, value, L, m - 1);
+        }
+        static int BinSearch(int[] sarr, int value)
+        {
+            return BinSearchDeQuy(sarr, value, 0, sarr.Length - 1);
+        }
+
+
+    }
+}
